@@ -1,7 +1,6 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { loadStripe } from '@stripe/stripe-js'
 import { removeProduct } from "@/redux/cartSlice";
 import { AiOutlineClose } from 'react-icons/ai'
@@ -11,6 +10,9 @@ const Cart = () => {
   const {products} = useSelector((state) => state.cart);
   const dispatch = useDispatch()
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+
+  let totalPrice = 0;
+  products.map((product) => totalPrice += (product.quantity * product.price))
 
   const handleRemoveProduct = (product) => {
     dispatch(removeProduct({ id: product?.id }))
@@ -39,9 +41,8 @@ const Cart = () => {
     })
 
     const data = await res.json()
-
     const stripe = await stripePromise
-
+    handleRemoveProduct()
     await stripe.redirectToCheckout({ sessionId: data.id })
 }
 
@@ -57,6 +58,7 @@ const Cart = () => {
             <th>Description</th>
             <th>Price</th>
             <th>Quantity</th>
+            <th>Remove</th>
             <th>Total</th>
           </tr>
           {products?.map((product) => (
@@ -77,12 +79,17 @@ const Cart = () => {
                 <span>{product.quantity}</span>
               </td>
               <td>
-                <span>{product.price * product.quantity}</span>
+              <div onClick={() => handleRemoveProduct(product)}>
+                <AiOutlineClose />
+            </div>
               </td>
               <td>
-              <span onClick={handleCheckout} disabled={products?.length === 0}>
-                            Order
-              </span>
+              <span>
+                Subtotal: ${totalPrice > 100 ? totalPrice : totalPrice }
+            </span>
+            <span onClick={handleCheckout} disabled={products?.length === 0}>
+                Order
+            </span>
               </td>
             </tr>
           ))}
