@@ -38,7 +38,8 @@ model Session {
 
 model User {
   id            String    @id @default(cuid()) @map("_id")
-  username          String?
+  username      String?
+  hashedPassword String?
   email         String    @unique
   emailVerified DateTime?
   image         String?
@@ -46,22 +47,7 @@ model User {
   sessions      Session[]
 }
 
-model Orders {
-  id              String         @id @default(cuid()) @map("_id")
-  userId          String
-  amount          Float
-  currency        String
-  status          String
-  createdDate     DateTime       @default(now())
-  paymentIntentID String?        @unique
-}
-model Category {
-  id    String  @id @default(cuid()) @map("_id")
-  slug  String  @unique
-  title String
-  img   String?
-  Products Product[]
-}
+
 
 model Product {
   id          String         @id @default(cuid()) @map("_id")
@@ -69,8 +55,5 @@ model Product {
   img         String
   desc        String
   price       Float
-  catSlug   String
-  cat       Category  @relation(fields: [catSlug], references: [slug])
 
 }
-
