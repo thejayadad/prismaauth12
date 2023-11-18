@@ -1,15 +1,16 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { loadStripe } from '@stripe/stripe-js'
 import { removeProduct } from "@/redux/cartSlice";
 import { AiOutlineClose } from 'react-icons/ai'
+import { useSession } from 'next-auth/react';
 
 
 const Cart = () => {
   const {products} = useSelector((state) => state.cart);
   const dispatch = useDispatch()
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+  const { data: session } = useSession();
 
   let totalPrice = 0;
   products.map((product) => totalPrice += (product.quantity * product.price))
@@ -19,6 +20,10 @@ const Cart = () => {
 }
 
   const handleCheckout = async () => {
+    if (!session) {
+      router.push('/login');
+      return;
+    }
     const lineItems = products.map((product) => {
         return {
             price_data: {
@@ -45,8 +50,6 @@ const Cart = () => {
     handleRemoveProduct()
     await stripe.redirectToCheckout({ sessionId: data.id })
 }
-
-
   return (
     <section>
       <h2>Cart Items</h2>
