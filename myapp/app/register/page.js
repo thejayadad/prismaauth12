@@ -3,8 +3,6 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from 'react';
 import axios from 'axios'; 
-import { useRouter } from 'next/navigation';
-
 
 const Register = () => {
 
