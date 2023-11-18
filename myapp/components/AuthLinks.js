@@ -2,13 +2,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
+import { AiOutlineShoppingCart } from 'react-icons/ai'
+
 
 import React from 'react'
 
 const AuthLinks = () => {
     const [open, setOpen] = useState(false);
     const { status } = useSession();
-  return (
+    const products = useSelector((state) => state.cart.products)
+    return (
     <>
         {status === "unauthenticated" ? (
         <Link href="/login">
@@ -16,8 +20,9 @@ const AuthLinks = () => {
         </Link>
       ) : (
         <>
-          <Link href="/write">
-            Write
+          <Link href="/cart">
+            <span>{products?.length}</span>
+            <AiOutlineShoppingCart />
           </Link>
           <span onClick={signOut}>
             Logout
